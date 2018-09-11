@@ -17,7 +17,7 @@ class MessageBox(wx.Panel):
         self.message_display.SetValue("Please scan the Barcode....\n")
 
     def update_message(self, barcode):
-        """Update"""
+        """Update message."""
         self.message_display.write("Barcode number %s was scanned\n" % barcode)
         self.display = BarcodeBox(self)
         
@@ -52,17 +52,19 @@ class BarcodeBox(wx.Panel):
         return self.display.GetValue()
 
     def barcode_dialog(self):
-        """Barcode dialog."""
+        """Barcode dialog message modal."""
         dial = wx.MessageDialog(None, 'Barcode is invalid.  Please re-scan...',
                                 'Info', wx.OK | wx.ICON_EXCLAMATION)
         dial.ShowModal()
 
     def barcode_char(self):
         """Barcode conditions."""
-        if len(self.get_barcode()) == 12:
+        barcode_length = 12
+
+        if len(self.get_barcode()) == barcode_length:
             self.run_callbacks()
             self.display.SetFocus()
-        if len(self.get_barcode()) > 12:
+        if len(self.get_barcode()) > barcode_length:
             self.barcode_dialog(self)
 
     def run_callbacks(self):
@@ -78,27 +80,28 @@ class BarcodeBox(wx.Panel):
 
 
 class MainWindow(wx.Frame):
+    """This is the main window class."""
 
-    def __init__(self,parent,id):
+    def __init__(self, parent, id):
 
-        wx.Frame.__init__(self,parent,id,'Barcode Reader')
-        vert_panel = wx.BoxSizer(wx.VERTICAL)
-        mainpanel = wx.BoxSizer(wx.HORIZONTAL)
+        wx.Frame.__init__(self, parent, id, 'Barcode Reader')
+        vertical_panel = wx.BoxSizer(wx.VERTICAL)
+        main_panel = wx.BoxSizer(wx.HORIZONTAL)
 
         message_box = MessageBox(self)
         barcode_box = BarcodeBox(self)
 
         barcode_box.callbacks.append(message_box.update_message)
         
-        mainpanel.Add(barcode_box, 0, wx.ALL|wx.EXPAND, border=10)
-        mainpanel.Add(message_box, 0, wx.ALL|wx.EXPAND, border=10)
+        main_panel.Add(barcode_box, 0, wx.ALL|wx.EXPAND, border=10)
+        main_panel.Add(message_box, 0, wx.ALL|wx.EXPAND, border=10)
         
         self.SetBackgroundColour("White")
         self.SetAutoLayout(True)
-        vert_panel.Add(mainpanel)
-        self.SetSizer(vert_panel)
+        vertical_panel.Add(main_panel)
+        self.SetSizer(vertical_panel)
 
-    def closewindow(self,event):
+    def close_window(self):
         self.Destroy()
 
 
